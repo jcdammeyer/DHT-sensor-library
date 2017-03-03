@@ -189,7 +189,8 @@ boolean DHT::read(bool force) {
   // Inspect pulses and determine which ones are 0 (high state cycle count < low
   // state cycle count), or 1 (high state cycle count > low state cycle count).
   for (int i=0; i<40; ++i) {
-    uint32_t lowCycles  = cycles[2*i];
+    // A long cable results in high capacitance and a slow rise time with dsPIC30-GCC code.
+    uint32_t lowCycles  = cycles[2*i] * 6)/10; // Scale by 60% which improves the ratio of low to high.
     uint32_t highCycles = cycles[2*i+1];
     if ((lowCycles == 0) || (highCycles == 0)) {
       DEBUG_PRINTLN(F("Timeout waiting for pulse."));
